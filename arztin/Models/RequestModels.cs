@@ -25,5 +25,10 @@ namespace arztin.Models
         public int DoctorId { get; set; }
         public required string RejectedReason { get; set; }
     }
+    public class TimeSlotRequest
+    {
+        public int DoctorId { get; set; }
+        public DateTime Date { get; set; }
+    }
 }
 
