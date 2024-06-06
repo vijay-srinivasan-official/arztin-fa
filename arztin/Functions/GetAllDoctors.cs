@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static arztin.Models.ArztinDataModels;
 
 namespace arztin.Functions
 {
@@ -46,7 +47,9 @@ namespace arztin.Functions
                             Currency = doctor.Currency,
                             Location = doctor.Location,
                             Rating = doctor.Rating,
-
+                            ProfilePhoto = (from user in _dbContext.Users
+                                            where (user.UserId == doctor.DoctorId)
+                                            select user.ProfilePhoto).Single(),
                         };
                         doctorDetailsList.Add(doctorDetails);
                     }
