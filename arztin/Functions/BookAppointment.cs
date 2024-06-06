@@ -3,6 +3,7 @@ using arztin.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using static arztin.Models.ArztinDataModels;
@@ -41,6 +42,30 @@ namespace arztin.Functions
                 }
 
                 CommonResponse response = new();
+
+                bool doctorExists = await _dbContext.Users.Where(x => x.UserId == appointmentRequest.DoctorId).AnyAsync();
+                bool patientExists = await _dbContext.Users.Where(x => x.UserId == appointmentRequest.PatientId).AnyAsync();
+
+                if(!doctorExists || !patientExists)
+                {
+                    response.Message = "Failure";
+                    response.Error = doctorExists ? "Patient doesn't exists in the system" : "Doctor doesn't exists in the system";
+                    response.HTTPStatus = 200;
+                    _logger.LogInformation("BookAppointment: Completed with error");
+                    return new OkObjectResult(response);
+                }
+
+                bool slotCheck = await _dbContext.Appointments.Where(x => x.DoctorId == appointmentRequest.DoctorId && x.AppointmentTime == appointmentRequest.AppointmentTime).AnyAsync();
+
+                if (slotCheck)
+                {
+                    response.Message = "Failure";
+                    response.Error = "Slot already booked, please choose a different slot";
+                    response.HTTPStatus = 200;
+                    _logger.LogInformation("BookAppointment: Completed with error");
+                    return new OkObjectResult(response);
+                }
+
                 Appointments appointment = new()
                 {
                     DoctorId = appointmentRequest.DoctorId,
@@ -53,6 +78,7 @@ namespace arztin.Functions
                 };
                 await _dbContext.Appointments.AddAsync(appointment);
                 await _dbContext.SaveChangesAsync();
+
                 response.Message = "Success";
                 response.Error = null;
                 response.HTTPStatus = 200;

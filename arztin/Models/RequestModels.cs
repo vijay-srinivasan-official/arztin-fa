@@ -7,5 +7,9 @@ namespace arztin.Models
         public int PatientId { get; set; }
         public DateTime AppointmentTime { get; set; }
     }
+    public class DoctorRequest
+    {
+        public int Id { get; set; }
+    }
 }
 

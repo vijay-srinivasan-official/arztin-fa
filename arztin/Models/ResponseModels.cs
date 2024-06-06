@@ -20,5 +20,12 @@ namespace arztin.Models
         public int Experience { get; set; }
         public double Rating { get; set; }
     }
+    public class PendingAppointmentsResponse
+    {
+        public int AppointmentId { get; set; }
+        public string? PatientName { get; set; }
+        public DateTime AppointmentTime { get; set; }
+        public string? PatientProfilePhoto { get; set; }
+    }
 }
 

@@ -30,6 +30,8 @@ namespace arztin.Models
             [Phone]
             public required string Phone { get; set; }
 
+            public string? ProfilePhoto { get; set; }
+
             [Required]
             public required string PasswordHash { get; set; }
 
