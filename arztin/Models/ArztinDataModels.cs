@@ -42,6 +42,8 @@ namespace arztin.Models
             [Key]
             public int DoctorId { get; set; }
 
+            public string? Name { get; set; }
+
             public string? Title { get; set; }
 
             public string? Specialty { get; set; }
@@ -52,11 +54,11 @@ namespace arztin.Models
 
             public string? Fees { get; set; }
 
-            public string? Currecny { get; set; }
+            public string? Currency { get; set; }
 
             public int Experience { get; set; }
 
-            public float Rating { get; set; }
+            public double Rating { get; set; }
 
             [Required]
             public DateTime CreatedOn { get; set; }
@@ -76,7 +78,6 @@ namespace arztin.Models
             [Required]
             public int PatientId { get; set; }
 
-            [Required]
             public DateTime AppointmentTime { get; set; }
 
             [Required]

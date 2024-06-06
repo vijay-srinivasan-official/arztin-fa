@@ -1,6 +1,12 @@
 ﻿using System;
 namespace arztin.Models
 {
+    public class CommonResponse
+    {
+        public string? Message { get; set; }
+        public int HTTPStatus { get; set; }
+        public object? Error { get; set; }
+    }
     public class AllDoctorsResponse
     {
         public int Id { get; set; }
@@ -12,7 +18,7 @@ namespace arztin.Models
         public string? Fees { get; set; }
         public string? Currency { get; set; }
         public int Experience { get; set; }
-        public float Rating { get; set; }
+        public double Rating { get; set; }
     }
 }
 

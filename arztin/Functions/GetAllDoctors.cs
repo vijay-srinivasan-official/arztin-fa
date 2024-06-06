@@ -37,13 +37,13 @@ namespace arztin.Functions
                         var doctorDetails = new AllDoctorsResponse
                         {
                             Id = doctor.DoctorId,
-                            Name = _dbContext.Users.Where(u => u.UserId == doctor.DoctorId).Select(x => x.Name).ToString(),
+                            Name = doctor.Name,
                             Title = doctor.Title,
                             Timing = doctor.Timing,
                             Fees = doctor.Fees,
                             Speciality = doctor.Specialty,
                             Experience = doctor.Experience,
-                            Currency = doctor.Currecny,
+                            Currency = doctor.Currency,
                             Location = doctor.Location,
                             Rating = doctor.Rating,
 
