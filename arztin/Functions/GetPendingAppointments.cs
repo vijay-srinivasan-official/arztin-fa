@@ -42,7 +42,7 @@ namespace arztin.Functions
                     return new BadRequestObjectResult("Invalid request");
                 }
 
-                var pendingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == doctorRequest.Id).OrderByDescending(x => x.DoctorId).ToListAsync();
+                var pendingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == doctorRequest.Id && x.Status.ToLower() == "pending").OrderByDescending(x => x.DoctorId).ToListAsync();
 
                 var appointmentList = new List<PendingAppointmentsResponse>();
                 foreach (var appointment in pendingAppointments)

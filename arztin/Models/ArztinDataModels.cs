@@ -32,8 +32,7 @@ namespace arztin.Models
 
             public string? ProfilePhoto { get; set; }
 
-            [Required]
-            public required string PasswordHash { get; set; }
+            public string? PasswordHash { get; set; }
 
             [Required]
             public DateTime CreatedOn { get; set; }

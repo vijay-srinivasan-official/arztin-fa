@@ -1,4 +1,5 @@
-﻿using arztin.DataDomain;
+﻿using System.Text;
+using arztin.DataDomain;
 using arztin.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,18 +44,6 @@ namespace arztin.Functions
 
                 CommonResponse response = new();
 
-                bool doctorExists = await _dbContext.Users.Where(x => x.UserId == appointmentRequest.DoctorId).AnyAsync();
-                bool patientExists = await _dbContext.Users.Where(x => x.UserId == appointmentRequest.PatientId).AnyAsync();
-
-                if(!doctorExists || !patientExists)
-                {
-                    response.Message = "Failure";
-                    response.Error = doctorExists ? "Patient doesn't exists in the system" : "Doctor doesn't exists in the system";
-                    response.HTTPStatus = 200;
-                    _logger.LogInformation("BookAppointment: Completed with error");
-                    return new OkObjectResult(response);
-                }
-
                 bool slotCheck = await _dbContext.Appointments.Where(x => x.DoctorId == appointmentRequest.DoctorId && x.AppointmentTime == appointmentRequest.AppointmentTime).AnyAsync();
 
                 if (slotCheck)
@@ -66,15 +55,76 @@ namespace arztin.Functions
                     return new OkObjectResult(response);
                 }
 
+                var patientId = appointmentRequest.PatientId;
+
+                if (appointmentRequest.PatientId == null)
+                {
+                    if(appointmentRequest.PatientEmail == null || appointmentRequest.PatientName == null || appointmentRequest.PatientPhone == null)
+                    {
+                        response = new()
+                        {
+                            Message = "Failure",
+                            Error = "Patient details cannot be empty",
+                            HTTPStatus = 200
+                        };
+                        _logger.LogInformation("BookAppointment: Completed with error");
+                        return new OkObjectResult(response);
+                    }
+
+                    bool patientEmailExists = await _dbContext.Users.Where(x => x.Email == appointmentRequest.PatientEmail).AnyAsync();
+
+                    if(patientEmailExists)
+                    {
+                        response = new()
+                        {
+                            Message = "Failure",
+                            Error = "Patient email already exists. Login to book appointment.",
+                            HTTPStatus = 200
+                        };
+                        _logger.LogInformation("BookAppointment: Completed with error");
+                        return new OkObjectResult(response);
+                    }
+
+                    //Register new patient as user in system
+
+                    Users user = new()
+                    {
+                        Name = appointmentRequest.PatientName!,
+                        Email = appointmentRequest.PatientEmail!,
+                        Phone = appointmentRequest.PatientPhone!,
+                        PasswordHash = GenerateRandom(10),
+                        UserType = "anonymous",
+                        UserRole = "patient",
+                        CreatedOn = DateTime.UtcNow,
+                    };
+
+                    await _dbContext.Users.AddAsync(user);
+                    await _dbContext.SaveChangesAsync();
+
+                    patientId = await _dbContext.Users.Where(x => x.Email == appointmentRequest.PatientEmail).Select(x => x.UserId).FirstOrDefaultAsync();
+                }
+
+                bool doctorExists = await _dbContext.Users.Where(x => x.UserId == appointmentRequest.DoctorId).AnyAsync();
+                bool patientExists = await _dbContext.Users.Where(x => x.UserId == patientId).AnyAsync();
+
+                if(!doctorExists || !patientExists)
+                {
+                    response.Message = "Failure";
+                    response.Error = doctorExists ? "Patient doesn't exists in the system" : "Doctor doesn't exists in the system";
+                    response.HTTPStatus = 200;
+                    _logger.LogInformation("BookAppointment: Completed with error");
+                    return new OkObjectResult(response);
+                }
+
                 Appointments appointment = new()
                 {
                     DoctorId = appointmentRequest.DoctorId,
-                    PatientId = appointmentRequest.PatientId,
+                    PatientId = (int)(appointmentRequest.PatientId ?? patientId)!,
                     AppointmentTime = appointmentRequest.AppointmentTime,
                     Status = "Pending",
                     Comment = "Pending for Approval",
                     CreatedOn = DateTime.UtcNow,
-                    CreatedBy = appointmentRequest.PatientId
+                    CreatedBy = (int)(appointmentRequest.PatientId ?? patientId)!
                 };
                 await _dbContext.Appointments.AddAsync(appointment);
                 await _dbContext.SaveChangesAsync();
@@ -97,6 +147,21 @@ namespace arztin.Functions
                 _logger.LogInformation("BookAppointment: Completed with error");
                 return new OkObjectResult(commonResponse);
             }
+        }
+
+        private static string GenerateRandom(int length)
+        {
+            const string validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            StringBuilder stringBuilder = new();
+            Random random = new();
+
+            for (int i = 0; i < length; i++)
+            {
+                int nextIndex = random.Next(validChars.Length);
+                stringBuilder.Append(validChars[nextIndex]);
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }
