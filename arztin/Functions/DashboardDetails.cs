@@ -23,7 +23,7 @@ namespace arztin.Functions
         [Function("DashboardDetails")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest httpReq)
         {
-            _logger.LogInformation($"GetPendingAppointments: Started");
+            _logger.LogInformation($"DashboardDetails: Started");
 
             string req;
             using (StreamReader reader = new(httpReq.Body))
@@ -34,7 +34,7 @@ namespace arztin.Functions
             DashboardRequest dashboardRequest = JsonConvert.DeserializeObject<DashboardRequest>(req)!;
             if (dashboardRequest == null)
             {
-                _logger.LogInformation("GetPendingAppointments: Completed with Error");
+                _logger.LogInformation("DashboardDetails: Completed with Error");
                 return new BadRequestObjectResult("Invalid request");
             }
 
@@ -49,7 +49,7 @@ namespace arztin.Functions
                 UpcomingAppointments = upcomingAppointments
             };
 
-            _logger.LogInformation("GetPendingAppointments: Completed successfully");
+            _logger.LogInformation("DashboardDetails: Completed successfully");
             return new OkObjectResult(response);
 
         }
