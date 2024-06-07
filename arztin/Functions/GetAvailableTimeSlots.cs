@@ -78,10 +78,11 @@ namespace arztin.Functions
                 .ToListAsync();
 
             var availableSlots = new List<DateTime>();
+            DateTime currentTime = DateTime.Now;
 
             for (var slot = startTime; slot < endTime; slot = slot.AddHours(1))
             {
-                if (!bookedSlots.Contains(slot))
+                if (!bookedSlots.Contains(slot) && (date.Date != currentTime.Date || slot > currentTime))
                 {
                     availableSlots.Add(slot);
                 }
