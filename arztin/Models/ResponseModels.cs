@@ -56,5 +56,11 @@ namespace arztin.Models
         public string RefreshToken { get; set; } = "";
         public string TokenType { get; set; } = "";
     }
+    public class DashboardResponse
+    {
+        public int TotalAppointments { get; set; }
+        public int UpcomingAppointments { get; set; }
+
+    }
 }
 

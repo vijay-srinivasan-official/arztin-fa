@@ -60,8 +60,8 @@ namespace arztin.Functions
                     };
                     appointmentList.Add(pendingAppointment);
                 }
-                
 
+                _logger.LogInformation("GetPendingAppointments: Completed successfully");
                 return new OkObjectResult(appointmentList);
             }
             catch (Exception ex)

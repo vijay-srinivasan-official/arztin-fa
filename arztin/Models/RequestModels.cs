@@ -36,5 +36,9 @@ namespace arztin.Models
         public string? Email { get; set; }
         public string? Password { get; set; }
     }
+    public class DashboardRequest
+    {
+        public int Id { get; set; }
+    }
 }
 
