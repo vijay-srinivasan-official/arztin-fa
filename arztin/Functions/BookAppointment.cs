@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using arztin.DataDomain;
 using arztin.Models;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +45,13 @@ namespace arztin.Functions
 
                 CommonResponse response = new();
 
-                bool slotCheck = await _dbContext.Appointments.Where(x => x.DoctorId == appointmentRequest.DoctorId && x.AppointmentTime == appointmentRequest.AppointmentTime).AnyAsync();
+                string dateTimeString = $"{appointmentRequest.AppointmentDate} {appointmentRequest.AppointmentTime}";
+                string inputFormat = "yyyy-MM-dd h:mm tt";
+                CultureInfo provider = CultureInfo.InvariantCulture;
+                DateTime appointmentDateTime = DateTime.ParseExact(dateTimeString, inputFormat, provider);
+                appointmentDateTime.AddHours(-5).AddMinutes(-30);
+
+                bool slotCheck = await _dbContext.Appointments.Where(x => x.DoctorId == appointmentRequest.DoctorId && x.AppointmentTime == appointmentDateTime).AnyAsync();
 
                 if (slotCheck)
                 {
@@ -73,33 +80,36 @@ namespace arztin.Functions
 
                     bool patientEmailExists = await _dbContext.Users.Where(x => x.Email == appointmentRequest.PatientEmail).AnyAsync();
 
-                    if(patientEmailExists)
-                    {
-                        response = new()
-                        {
-                            Message = "Failure",
-                            Error = "Patient email already exists. Login to book appointment.",
-                            HTTPStatus = 200
-                        };
-                        _logger.LogInformation("BookAppointment: Completed with error");
-                        return new OkObjectResult(response);
-                    }
+                    //if(patientEmailExists)
+                    //{
+                    //    response = new()
+                    //    {
+                    //        Message = "Failure",
+                    //        Error = "Patient email already exists. Login to book appointment.",
+                    //        HTTPStatus = 200
+                    //    };
+                    //    _logger.LogInformation("BookAppointment: Completed with error");
+                    //    return new OkObjectResult(response);
+                    //}
 
                     //Register new patient as user in system
 
-                    Users user = new()
+                    if (!patientEmailExists)
                     {
-                        Name = appointmentRequest.PatientName!,
-                        Email = appointmentRequest.PatientEmail!,
-                        Phone = appointmentRequest.PatientPhone!,
-                        PasswordHash = GenerateRandom(10),
-                        UserType = "anonymous",
-                        UserRole = "patient",
-                        CreatedOn = DateTime.UtcNow,
-                    };
+                        Users user = new()
+                        {
+                            Name = appointmentRequest.PatientName!,
+                            Email = appointmentRequest.PatientEmail!,
+                            Phone = appointmentRequest.PatientPhone!,
+                            PasswordHash = GenerateRandom(10),
+                            UserType = "anonymous",
+                            UserRole = "patient",
+                            CreatedOn = DateTime.UtcNow,
+                        };
 
-                    await _dbContext.Users.AddAsync(user);
-                    await _dbContext.SaveChangesAsync();
+                        await _dbContext.Users.AddAsync(user);
+                        await _dbContext.SaveChangesAsync();
+                    }
 
                     patientId = await _dbContext.Users.Where(x => x.Email == appointmentRequest.PatientEmail).Select(x => x.UserId).FirstOrDefaultAsync();
                 }
@@ -120,7 +130,7 @@ namespace arztin.Functions
                 {
                     DoctorId = appointmentRequest.DoctorId,
                     PatientId = (int)(appointmentRequest.PatientId ?? patientId)!,
-                    AppointmentTime = appointmentRequest.AppointmentTime,
+                    AppointmentTime = appointmentDateTime,
                     Status = "Pending",
                     Comment = "Pending for Approval",
                     CreatedOn = DateTime.UtcNow,

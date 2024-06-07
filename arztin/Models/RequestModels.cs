@@ -8,7 +8,8 @@ namespace arztin.Models
         public string? PatientName { get; set; }
         public string? PatientEmail { get; set; }
         public string? PatientPhone { get; set; }
-        public DateTime AppointmentTime { get; set; }
+        public string? AppointmentDate { get; set; }
+        public string? AppointmentTime { get; set; }
     }
     public class DoctorRequest
     {
