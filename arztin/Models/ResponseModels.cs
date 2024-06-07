@@ -28,5 +28,33 @@ namespace arztin.Models
         public DateTime AppointmentTime { get; set; }
         public string? PatientProfilePhoto { get; set; }
     }
+    public class SignInResponse
+    {
+        public string access_token { get; set; } = "";
+        public long expires_at { get; set; }
+        public long expires_in { get; set; }
+        public string refresh_token { get; set; } = "";
+        public string token_type { get; set; } = "";
+        public UserResponse? user { get; set; }
+    }
+    public class UserResponse
+    {
+        public int Id { get; set; }
+        public string? UserName { get; set; }
+        public string Email { get; set; } = "";
+        public bool IsAdmin { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string? UserRole { get; set; }
+        public string? Provider { get; set; }
+        public bool IsActive { get; set; }
+    }
+    public class TokenResponse
+    {
+        public string AccessToken { get; set; } = "";
+        public long ExpiresAt { get; set; }
+        public long ExpiresIn { get; set; }
+        public string RefreshToken { get; set; } = "";
+        public string TokenType { get; set; } = "";
+    }
 }
 

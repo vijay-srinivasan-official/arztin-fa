@@ -22,6 +22,9 @@
     <None Remove="Models\" />
     <None Remove="Functions\" />
     <None Remove="DataDomain\" />
+    <None Remove="Business\" />
+    <None Remove="Business\Authentication\" />
+    <None Remove="Business\Email\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
@@ -39,5 +42,8 @@
     <Folder Include="Models\" />
     <Folder Include="Functions\" />
     <Folder Include="DataDomain\" />
+    <Folder Include="Business\" />
+    <Folder Include="Business\Authentication\" />
+    <Folder Include="Business\Email\" />
   </ItemGroup>
 </Project>
