@@ -42,7 +42,7 @@ namespace arztin.Functions
 
             int totalAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == dashboardRequest.Id).CountAsync();
             int pendingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == dashboardRequest.Id && x.Status.ToLower() == "pending").CountAsync();
-            int upcomingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == dashboardRequest.Id && x.Status.ToLower() == "approved" && x.AppointmentTime > DateTime.Now).CountAsync();
+            int upcomingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == dashboardRequest.Id && x.Status.ToLower() != "pending" && x.AppointmentTime > DateTime.Now).CountAsync();
 
             response = new()
             {

@@ -60,19 +60,19 @@ namespace arztin.Functions
                         return new OkObjectResult(response);
                     }
 
-                    if (request.Status.ToLower() == "rejectd")
+                    if (request.Status.ToLower() == "rejected")
                     {
                         response = new()
                         {
                             HTTPStatus = 204,
-                            Error = "You have already rejectd this request.",
+                            Error = "You have already rejected this request.",
                             Message = "Failure"
                         };
                         _logger.LogInformation("RejectAppointment: Completed with error");
                         return new OkObjectResult(response);
                     }
 
-                    request.Status = "Rejectd";
+                    request.Status = "Rejected";
                     request.Comment = rejectAppointmentRequest.RejectedReason;
                     _dbContext.Appointments.Update(request);
 
