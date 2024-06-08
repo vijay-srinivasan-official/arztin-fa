@@ -26,6 +26,7 @@ namespace arztin.Models
         public int AppointmentId { get; set; }
         public string? PatientName { get; set; }
         public DateTime AppointmentTime { get; set; }
+        public string? AppointmentStatus { get; set; }
         public string? PatientProfilePhoto { get; set; }
     }
     public class SignInResponse
@@ -59,6 +60,7 @@ namespace arztin.Models
     public class DashboardResponse
     {
         public int TotalAppointments { get; set; }
+        public int PendingAppointments { get; set; }
         public int UpcomingAppointments { get; set; }
 
     }

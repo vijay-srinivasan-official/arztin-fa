@@ -9,23 +9,23 @@ using Newtonsoft.Json;
 
 namespace arztin.Functions
 {
-    public class UpcomingApproved
+    public class UpcomingAppointments
     {
         private readonly ArztinDbContext _dbContext;
-        private readonly ILogger<UpcomingApproved> _logger;
+        private readonly ILogger<UpcomingAppointments> _logger;
 
-        public UpcomingApproved(ArztinDbContext dbContext, ILogger<UpcomingApproved> logger)
+        public UpcomingAppointments(ArztinDbContext dbContext, ILogger<UpcomingAppointments> logger)
         {
             _dbContext = dbContext;
             _logger = logger;
         }
 
-        [Function("UpcomingApproved")]
+        [Function("UpcomingAppointments")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequest httpReq)
         {
             try
             {
-                _logger.LogInformation($"GetPendingAppointments: Started");
+                _logger.LogInformation($"UpcomingAppointments: Started");
 
                 string req;
                 using (StreamReader reader = new(httpReq.Body))
@@ -36,11 +36,11 @@ namespace arztin.Functions
                 DoctorRequest doctorRequest = JsonConvert.DeserializeObject<DoctorRequest>(req)!;
                 if (doctorRequest == null)
                 {
-                    _logger.LogInformation("GetPendingAppointments: Completed with Error");
+                    _logger.LogInformation("UpcomingAppointments: Completed with Error");
                     return new BadRequestObjectResult("Invalid request");
                 }
 
-                var upcomingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == doctorRequest.Id && x.Status.ToLower() == "approved" && x.AppointmentTime > DateTime.Now).OrderByDescending(x => x.DoctorId).ToListAsync();
+                var upcomingAppointments = await _dbContext.Appointments.Where(x => x.DoctorId == doctorRequest.Id && x.Status.ToLower() != "pending" && x.AppointmentTime > DateTime.Now).OrderByDescending(x => x.DoctorId).ToListAsync();
 
                 var appointmentList = new List<PendingAppointmentsResponse>();
                 foreach (var appointment in upcomingAppointments)
@@ -49,6 +49,7 @@ namespace arztin.Functions
                     {
                         AppointmentId = appointment.AppointmentId,
                         AppointmentTime = appointment.AppointmentTime,
+                        AppointmentStatus = appointment.Status,
                         PatientName = (from user in _dbContext.Users
                                        where (user.UserId == appointment.PatientId)
                                        select user.Name).Single(),
@@ -59,7 +60,7 @@ namespace arztin.Functions
                     appointmentList.Add(pendingAppointment);
                 }
 
-                _logger.LogInformation("GetPendingAppointments: Completed successfully");
+                _logger.LogInformation("UpcomingAppointments: Completed successfully");
                 return new OkObjectResult(appointmentList);
             }
             catch (Exception ex)
@@ -71,7 +72,7 @@ namespace arztin.Functions
                     Message = "Failure"
                 };
                 _logger.LogError($"Error booking appointment: {ex.Message}");
-                _logger.LogInformation("GetPendingAppointments: Completed with error");
+                _logger.LogInformation("UpcomingAppointments: Completed with error");
                 return new OkObjectResult(commonResponse);
             }
         }

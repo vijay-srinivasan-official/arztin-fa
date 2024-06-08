@@ -89,7 +89,7 @@ namespace arztin.Functions
                                     <head>
                                         <meta charset='UTF-8'>
                                         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                                        <title>Appointment Confirmation</title>
+                                        <title>Your ppointment is rejected.</title>
                                         <style>
                                             body {{
                                                 font-family: Arial, sans-serif;
@@ -135,12 +135,11 @@ namespace arztin.Functions
                                                 <p>Dear {userDetail.Name},</p>
                                                 <p>We are sorry to inform you that your appointment has been rejected by our doctor.</p>
                                                 <p><strong>Appointment Details:</strong></p>
-                                                <p>Date & Time: {request.AppointmentTime}</p>
-                                                <p>Reason: {rejectAppointmentRequest.RejectedReason}</p>
+                                                <p><b>Date & Time:</b> {request.AppointmentTime}</p>
+                                                <p><b>Reason:</b> {rejectAppointmentRequest.RejectedReason}</p>
                                                 <p>If you have any questions or need to reschedule, please do not hesitate to contact us.</p>
                                                 <p>Thank you for choosing our services.</p>
-                                                <p>Sincerely,</p>
-                                                <p>Arztin Company</p>
+                                                <p>Sincerely,<br/>Arztin Company</p>
                                             </div>
                                             <div class='footer'>
                                                 <p>Arztin Company | contact@arztin.site</p>
