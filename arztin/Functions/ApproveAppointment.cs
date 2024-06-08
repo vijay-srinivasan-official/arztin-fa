@@ -84,9 +84,6 @@ namespace arztin.Functions
                     var userDetail = (from user in _dbContext.Users
                                    where (user.UserId == request.PatientId)
                                    select user).Single();
-                    string logo = "https://arztin.site/arztin-logo.svg";
-                    string logoName = "https://arztin.site/arztin.svg";
-
                     var message = $@"
                                     <!DOCTYPE html>
                                     <html lang='en'>
@@ -132,8 +129,7 @@ namespace arztin.Functions
                                     <body>
                                         <div class='container'>
                                             <div class='header'>
-                                                <img class=""logo"" src=`{logo}` alt='Company Logo'>
-                                                <img class=""logo"" src=`{logoName}` alt='Company Logo'>
+                                                
                                             </div>
                                             <div class='content'>
                                                 <h2>Appointment Confirmation</h2>

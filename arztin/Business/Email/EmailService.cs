@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using arztin.Functions;
 using Microsoft.Extensions.Configuration;
@@ -34,14 +35,19 @@ public class EmailService
                 smtpClient.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
                 smtpClient.EnableSsl = true; // Set to true if your SMTP server requires SSL
 
+                // Create the HTML view with an embedded image
+                AlternateView htmlView = AlternateView.CreateAlternateViewFromString(body, null, MediaTypeNames.Text.Html);
+
                 // Create a MailMessage
                 MailMessage mailMessage = new MailMessage
                 {
                     From = new MailAddress(fromEmail),
                     Subject = subject,
-                    Body = body,
                     IsBodyHtml = isBodyHtml
                 };
+
+                // Attach the HTML view to the mail message
+                mailMessage.AlternateViews.Add(htmlView);
 
                 // Add recipient
                 mailMessage.To.Add(toEmail);

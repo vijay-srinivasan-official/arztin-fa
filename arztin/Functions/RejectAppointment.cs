@@ -128,11 +128,10 @@ namespace arztin.Functions
                                     <body>
                                         <div class='container'>
                                             <div class='header'>
-                                                <img class=""logo"" src=""https://arztin.site/arztin-logo.svg"" alt='Company Logo'>
-                                                <img class=""logo"" src=""https://arztin.site/arztin.svg"" alt='Company Logo'>
+
                                             </div>
                                             <div class='content'>
-                                                <h2>Appointment Confirmation</h2>
+                                                <h2>Appointment Rejected</h2>
                                                 <p>Dear {userDetail.Name},</p>
                                                 <p>We are sorry to inform you that your appointment has been rejected by our doctor.</p>
                                                 <p><strong>Appointment Details:</strong></p>

@@ -51,6 +51,15 @@ namespace arztin.Functions
                 DateTime appointmentDateTime = DateTime.ParseExact(dateTimeString, inputFormat, provider);
                 appointmentDateTime.AddHours(-5).AddMinutes(-30);
 
+                if (appointmentDateTime < DateTime.Now.Date)
+                {
+                    response.Message = "Failure";
+                    response.Error = "Appointment date cannot be in the past";
+                    response.HTTPStatus = 500;
+                    _logger.LogInformation("BookAppointment: Completed with error");
+                    return new OkObjectResult(response);
+                }
+
                 bool slotCheck = await _dbContext.Appointments.Where(x => x.DoctorId == appointmentRequest.DoctorId && x.AppointmentTime == appointmentDateTime).AnyAsync();
 
                 if (slotCheck)
